@@ -1,0 +1,134 @@
+<link rel="import" href="../../node_modules/@polymer/polymer/polymer.html">
+
+<link rel="import" href="../scram-express-app/scram-express-app.component.html">
+<link rel="import" href="../scram-express-middleware/scram-express-middleware.component.html">
+
+<dom-module id="app-component">
+    <template>
+        <scram-express-app port="3000">
+            <scram-express-middleware callback="[[bodyParserMW]]"></scram-express-middleware>
+            <scram-express-middleware callback="[[bodyParserURLEncodedMW]]"></scram-express-middleware>
+            <scram-express-middleware callback="[[loggerMW]]"></scram-express-middleware>
+            <scram-express-middleware method="get" path="/" callback="[[getIndex]]"></scram-express-middleware>
+            <scram-express-middleware method="get" path="/collections/:collectionName" callback="[[getCollection]]"></scram-express-middleware>
+            <scram-express-middleware method="post" path="/collections/:collectionName" callback="[[postCollection]]"></scram-express-middleware>
+            <scram-express-middleware method="get" path="/collections/:collectionName/:id" callback="[[getCollectionEntity]]"></scram-express-middleware>
+            <scram-express-middleware method="put" path="/collections/:collectionName/:id" callback="[[putCollectionEntity]]"></scram-express-middleware>
+            <scram-express-middleware method="delete" path="/collections/:collectionName/:id" callback="[[deleteCollectionEntity]]"></scram-express-middleware>
+        </scram-express-app>
+    </template>
+
+    <script>
+        class AppComponent {
+
+            beforeRegister() {
+                this.is = 'app-component';
+                this.properties = {
+                };
+            }
+
+            ready() {
+                const mongoskin = require('mongoskin');
+                const bodyParser = require('body-parser');
+                const logger = require('morgan');
+
+                this.bodyParserMW = bodyParser.json();
+                this.bodyParserURLEncodedMW = bodyParser.urlencoded({extended: true});
+                this.loggerMW = logger('dev');
+
+                var db = mongoskin.db('mongodb://@localhost:27017/test', {safe:true});
+
+                window.expressApp.param('collectionName', function(req, res, next, collectionName){
+                  req.collection = db.collection(collectionName)
+                  return next()
+              });
+
+                this.getIndex = (req, res) => {
+                    res.send('please select a collection, e.g., /collections/messages');
+                };
+
+                this.getCollection = (req, res, next) => {
+                    console.log(req.collection);
+                    req.collection.find({} ,{limit: 10, sort: {'_id': -1}}).toArray(function(e, results){
+                      if (e) return next(e)
+                      res.send(results)
+                  });
+                }
+
+                this.postCollection = (req, res, next) => {
+                    req.collection.insert(req.body, {}, function(e, results){
+                      if (e) return next(e)
+                      res.send(results)
+                  });
+                }
+
+                this.getCollectionEntity = (req, res, next) => {
+                    req.collection.findById(req.params.id, function(e, result){
+                      if (e) return next(e)
+                      res.send(result)
+                  });
+                }
+
+                this.putCollectionEntity = (req, res, next) => {
+                    req.collection.updateById(req.params.id, {$set: req.body}, {safe: true, multi: false}, function(e, result){
+                      if (e) return next(e)
+                      res.send((result === 1) ? {msg:'success'} : {msg: 'error'})
+                  });
+                }
+
+                this.deleteCollectionEntity = (req, res, next) => {
+                    req.collection.removeById(req.params.id, function(e, result){
+                      if (e) return next(e)
+                      res.send((result === 1)?{msg: 'success'} : {msg: 'error'})
+                  });
+                }
+            }
+
+            attached() {}
+            detached() {}
+            attributeChanged() {}
+
+            //TODO hooking up these functions doesn't set off the property observer, we still to init. Check if undefined in ready, then do init in the observer if necessary
+            // getIndex(req, res) {
+            //     res.send('please select a collection, e.g., /collections/messages');
+            // }
+            //
+            // getCollection(req, res, next) {
+            //     req.collection.find({} ,{limit: 10, sort: {'_id': -1}}).toArray(function(e, results){
+            //       if (e) return next(e)
+            //       res.send(results)
+            //   });
+            // }
+            //
+            // postCollection(req, res, next) {
+            //     req.collection.insert(req.body, {}, function(e, results){
+            //       if (e) return next(e)
+            //       res.send(results)
+            //   });
+            // }
+            //
+            // getCollectionEntity(req, res, next) {
+            //     req.collection.findById(req.params.id, function(e, result){
+            //       if (e) return next(e)
+            //       res.send(result)
+            //   });
+            // }
+            //
+            // putCollectionEntity(req, res, next) {
+            //     req.collection.updateById(req.params.id, {$set: req.body}, {safe: true, multi: false}, function(e, result){
+            //       if (e) return next(e)
+            //       res.send((result === 1) ? {msg:'success'} : {msg: 'error'})
+            //   });
+            // }
+            //
+            // deleteCollectionEntity(req, res, next) {
+            //     req.collection.removeById(req.params.id, function(e, result){
+            //       if (e) return next(e)
+            //       res.send((result === 1)?{msg: 'success'} : {msg: 'error'})
+            //   });
+            // }
+        }
+
+        Polymer(AppComponent);
+    </script>
+</dom-module>
