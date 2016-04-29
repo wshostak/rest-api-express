@@ -4,7 +4,7 @@
   "description": "",
   "main": "express.js",
   "scripts": {
-    "start": "node express.js",
+    "start": "./node_modules/.bin/scram-engine",
     "test": "./node_modules/mocha/bin/mocha express.test.js"
   },
   "repository": {
