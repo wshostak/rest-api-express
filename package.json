@@ -23,8 +23,7 @@
     "mongoskin": "1.4.4",
     "morgan": "1.5.0",
     "scram-engine": "git+ssh://git@github.com/scramjs/scram-markup-engine.git",
-    "scram-express-app": "git+ssh://git@github.com/scramjs/scram-express-app.git",
-    "scram-express-middleware": "git+ssh://git@github.com/scramjs/scram-express-middleware.git"
+    "scram-express": "git+ssh://git@github.com/scramjs/scram-express.git"
   },
   "devDependencies": {
     "expect.js": "0.3.1",
