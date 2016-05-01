@@ -20,10 +20,10 @@
     "@polymer/polymer": "^1.2.5-npm-test.2",
     "body-parser": "1.9.2",
     "express": "4.10.1",
+    "express-web-components": "git+ssh://git@github.com/scramjs/express-web-components.git",
     "mongoskin": "1.4.4",
     "morgan": "1.5.0",
-    "scram-engine": "git+ssh://git@github.com/scramjs/scram-markup-engine.git",
-    "scram-express": "git+ssh://git@github.com/scramjs/scram-express.git"
+    "scram-engine": "git+ssh://git@github.com/scramjs/scram-markup-engine.git"
   },
   "devDependencies": {
     "expect.js": "0.3.1",

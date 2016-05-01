@@ -1,21 +1,23 @@
 <link rel="import" href="../../node_modules/@polymer/polymer/polymer.html">
 
-<link rel="import" href="../../node_modules/scram-express/scram-express-app.html">
-<link rel="import" href="../../node_modules/scram-express/scram-express-middleware.html">
+<link rel="import" href="../../node_modules/express-web-components/express-app.html">
+<link rel="import" href="../../node_modules/express-web-components/express-middleware.html">
+<link rel="import" href="../../node_modules/express-web-components/express-app-param.html">
 
 <dom-module id="app-component">
     <template>
-        <scram-express-app port="3000">
-            <scram-express-middleware callback="[[bodyParserMW]]"></scram-express-middleware>
-            <scram-express-middleware callback="[[bodyParserURLEncodedMW]]"></scram-express-middleware>
-            <scram-express-middleware callback="[[loggerMW]]"></scram-express-middleware>
-            <scram-express-middleware method="get" path="/" callback="[[getIndex]]"></scram-express-middleware>
-            <scram-express-middleware method="get" path="/collections/:collectionName" callback="[[getCollection]]"></scram-express-middleware>
-            <scram-express-middleware method="post" path="/collections/:collectionName" callback="[[postCollection]]"></scram-express-middleware>
-            <scram-express-middleware method="get" path="/collections/:collectionName/:id" callback="[[getCollectionEntity]]"></scram-express-middleware>
-            <scram-express-middleware method="put" path="/collections/:collectionName/:id" callback="[[putCollectionEntity]]"></scram-express-middleware>
-            <scram-express-middleware method="delete" path="/collections/:collectionName/:id" callback="[[deleteCollectionEntity]]"></scram-express-middleware>
-        </scram-express-app>
+        <express-app port="3000">
+            <express-app-param name="collectionName" callback="[[paramCallback]]"></express-app-param>
+            <express-middleware callback="[[bodyParserMW]]"></express-middleware>
+            <express-middleware callback="[[bodyParserURLEncodedMW]]"></express-middleware>
+            <express-middleware callback="[[loggerMW]]"></express-middleware>
+            <express-middleware method="get" path="/" callback="[[getIndex]]"></express-middleware>
+            <express-middleware method="get" path="/collections/:collectionName" callback="[[getCollection]]"></express-middleware>
+            <express-middleware method="post" path="/collections/:collectionName" callback="[[postCollection]]"></express-middleware>
+            <express-middleware method="get" path="/collections/:collectionName/:id" callback="[[getCollectionEntity]]"></express-middleware>
+            <express-middleware method="put" path="/collections/:collectionName/:id" callback="[[putCollectionEntity]]"></express-middleware>
+            <express-middleware method="delete" path="/collections/:collectionName/:id" callback="[[deleteCollectionEntity]]"></express-middleware>
+        </express-app>
     </template>
 
     <script>
@@ -23,8 +25,6 @@
 
             beforeRegister() {
                 this.is = 'app-component';
-                this.properties = {
-                };
             }
 
             ready() {
@@ -38,10 +38,10 @@
 
                 var db = mongoskin.db('mongodb://@localhost:27017/test', {safe:true});
 
-                window.expressApp.param('collectionName', function(req, res, next, collectionName){
-                  req.collection = db.collection(collectionName)
-                  return next()
-              });
+                this.paramCallback = function(req, res, next, collectionName){
+                    req.collection = db.collection(collectionName)
+                    return next()
+                };
 
                 this.getIndex = (req, res) => {
                     res.send('please select a collection, e.g., /collections/messages');
@@ -83,50 +83,6 @@
                   });
                 }
             }
-
-            attached() {}
-            detached() {}
-            attributeChanged() {}
-
-            //TODO hooking up these functions doesn't set off the property observer, we still to init. Check if undefined in ready, then do init in the observer if necessary
-            // getIndex(req, res) {
-            //     res.send('please select a collection, e.g., /collections/messages');
-            // }
-            //
-            // getCollection(req, res, next) {
-            //     req.collection.find({} ,{limit: 10, sort: {'_id': -1}}).toArray(function(e, results){
-            //       if (e) return next(e)
-            //       res.send(results)
-            //   });
-            // }
-            //
-            // postCollection(req, res, next) {
-            //     req.collection.insert(req.body, {}, function(e, results){
-            //       if (e) return next(e)
-            //       res.send(results)
-            //   });
-            // }
-            //
-            // getCollectionEntity(req, res, next) {
-            //     req.collection.findById(req.params.id, function(e, result){
-            //       if (e) return next(e)
-            //       res.send(result)
-            //   });
-            // }
-            //
-            // putCollectionEntity(req, res, next) {
-            //     req.collection.updateById(req.params.id, {$set: req.body}, {safe: true, multi: false}, function(e, result){
-            //       if (e) return next(e)
-            //       res.send((result === 1) ? {msg:'success'} : {msg: 'error'})
-            //   });
-            // }
-            //
-            // deleteCollectionEntity(req, res, next) {
-            //     req.collection.removeById(req.params.id, function(e, result){
-            //       if (e) return next(e)
-            //       res.send((result === 1)?{msg: 'success'} : {msg: 'error'})
-            //   });
-            // }
         }
 
         Polymer(AppComponent);
