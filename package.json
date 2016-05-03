@@ -4,7 +4,7 @@
   "description": "",
   "main": "express.js",
   "scripts": {
-    "start": "./node_modules/.bin/scram-engine",
+    "start": "electron node_modules/scram-engine/main.js app/server/index.html",
     "test": "./node_modules/mocha/bin/mocha express.test.js"
   },
   "repository": {
@@ -19,6 +19,7 @@
   "dependencies": {
     "@polymer/polymer": "^1.2.5-npm-test.2",
     "body-parser": "1.9.2",
+    "electron-prebuilt": "^0.37.8",
     "express": "4.10.1",
     "express-web-components": "git+ssh://git@github.com/scramjs/express-web-components.git",
     "mongoskin": "1.4.4",
