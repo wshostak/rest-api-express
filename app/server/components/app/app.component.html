@@ -2,11 +2,12 @@
 
 <link rel="import" href="../../../../node_modules/express-web-components/express-app.html">
 <link rel="import" href="../../../../node_modules/express-web-components/express-middleware.html">
-<link rel="import" href="../../../../node_modules/express-web-components/express-app-param.html">
+<link rel="import" href="../../../../node_modules/express-web-components/express-config.html">
 
 <dom-module id="app-component">
     <template>
         <express-app port="3000">
+            <express-config callback="[[paramCallback]]"></express-config>
             <express-app-param name="collectionName" callback="[[paramCallback]]"></express-app-param>
             <express-middleware callback="[[bodyParserMW]]"></express-middleware>
             <express-middleware callback="[[bodyParserURLEncodedMW]]"></express-middleware>
@@ -38,9 +39,11 @@
 
                 var db = mongoskin.db('mongodb://@localhost:27017/test', {safe:true});
 
-                this.paramCallback = function(req, res, next, collectionName){
-                    req.collection = db.collection(collectionName)
-                    return next()
+                this.paramCallback = (app) => {
+                    app.param('collectionName', function(req, res, next, collectionName){
+                        req.collection = db.collection(collectionName)
+                        return next()
+                    });
                 };
 
                 this.getIndex = (req, res) => {
