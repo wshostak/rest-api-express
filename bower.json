@@ -1,0 +1,21 @@
+{
+  "name": "rest-api-express",
+  "description": "",
+  "main": "express.js",
+  "authors": [
+    "Azat Mardan"
+  ],
+  "license": "BSD-2-Clause",
+  "homepage": "https://github.com/scramjs/rest-api-express",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "express-web-components": "^0.1.6"
+  }
+}
