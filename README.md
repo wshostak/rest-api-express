@@ -1,3 +1,5 @@
+# This is a fork of the original project, rewritten with [Express Web Components](https://github.com/scramjs/express-web-components)
+
 > Node.js REST API Example with MongoDB, Mongoskin, Express 3 and 4
 
 # Express.js 4.x
