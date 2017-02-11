@@ -5,7 +5,7 @@
 bower install
 npm install
 npm run dev // development without a debug browser window
-npm run-dev-window // development with a debug browser window (recommended)
+npm run dev-window // development with a debug browser window (recommended)
 ```
 
 # The instructions below are for the original repository
